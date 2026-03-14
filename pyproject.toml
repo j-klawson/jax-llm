@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jax-llm"
+version = "0.1.0"
+description = "A small GPT-style LLM built with JAX/Flax, based on the DeepLearning.AI course 'Build and Train an LLM with JAX'."
+requires-python = ">=3.10"
+dependencies = [
+    "jax",
+    "flax",
+    "optax",
+    "grain",
+    "tiktoken",
+    "orbax-checkpoint",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

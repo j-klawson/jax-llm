@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+*.orbax/
+*.orbax
+checkpoints/*
+!checkpoints/.gitkeep
+.venv/
+venv/
+*.so
+.ipynb_checkpoints/
+notebooks/
