@@ -1,6 +1,6 @@
 # jax-llm
 
-A small GPT-style language model built with JAX based on the course [Build and Train an LLM with JAX](https://learn.    deeplearning.ai/courses/build-and-train-an-llm-with-jax/information). 
+A small GPT-style language model built with JAX based on the course [Build and Train an LLM with JAX](https://learn.deeplearning.ai/courses/build-and-train-an-llm-with-jax/information). 
 
 ## Setup
 
