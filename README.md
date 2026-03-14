@@ -1,6 +1,6 @@
 # jax-llm
 
-A small GPT-style language model built with JAX and Flax, extracted from Jupyter notebooks into a proper Python package.
+A small GPT-style language model built with JAX based on the course [Build and Train an LLM with JAX](https://learn.    deeplearning.ai/courses/build-and-train-an-llm-with-jax/information). 
 
 ## Setup
 
@@ -30,4 +30,4 @@ pytest tests/
 
 ## Attribution
 
-The model architecture and training code are based on the DeepLearning.AI course [Build and Train an LLM with JAX](https://learn.deeplearning.ai/courses/build-and-train-an-llm-with-jax/information). The original course notebooks are preserved in `notebooks/` for reference.
+The model architecture and training code are based on the DeepLearning.AI course [Build and Train an LLM with JAX](https://learn.deeplearning.ai/courses/build-and-train-an-llm-with-jax/information).

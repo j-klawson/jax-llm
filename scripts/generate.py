@@ -15,7 +15,8 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    os.environ["JAX_PLATFORMS"] = args.device
+    platform = "cuda" if args.device == "gpu" else args.device
+    os.environ["JAX_PLATFORMS"] = platform
 
     import jax
     import flax.nnx as nnx
@@ -30,7 +31,7 @@ def main() -> None:
     model = MiniGPT()
 
     # Restore checkpoint
-    device = jax.devices(args.device)[0]
+    device = jax.devices(platform)[0]
     sharding = SingleDeviceSharding(device)
     restore_args = jax.tree_util.tree_map(
         lambda _: orbax.checkpoint.ArrayRestoreArgs(sharding=sharding),

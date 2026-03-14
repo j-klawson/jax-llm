@@ -32,7 +32,7 @@ def train_step(
     grad_fn = nnx.value_and_grad(loss_fn, has_aux=True)
     (loss, logits), grads = grad_fn(model, batch)
     metrics.update(loss=loss, logits=logits, labels=batch[1])
-    optimizer.update(grads)
+    optimizer.update(model, grads)
 
 
 def train(config: TrainConfig) -> nnx.Module:
@@ -70,7 +70,8 @@ def train(config: TrainConfig) -> nnx.Module:
     )
 
     optimizer = nnx.Optimizer(
-        model, optax.adamw(learning_rate=lr_schedule, weight_decay=config.weight_decay)
+        model, optax.adamw(learning_rate=lr_schedule, weight_decay=config.weight_decay),
+        wrt=nnx.Param,
     )
     metrics = nnx.MultiMetric(loss=nnx.metrics.Average("loss"))
 

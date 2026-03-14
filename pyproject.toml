@@ -17,6 +17,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+cuda = ["jax[cuda12]"]
+ui = ["gradio"]
 dev = ["pytest"]
 
 [tool.setuptools.packages.find]

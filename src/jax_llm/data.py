@@ -1,3 +1,4 @@
+import csv
 from pathlib import Path
 
 import grain.python as grain
@@ -5,18 +6,28 @@ import tiktoken
 
 
 def load_stories_from_file(path: str | Path, max_stories: int | None = None) -> list[str]:
-    """Read a text file and split on <|endoftext|> separators."""
+    """Read stories from a text file (split on <|endoftext|>) or a CSV with a 'text' column."""
     path = Path(path)
     print(f"Loading stories from {path}...")
-    with open(path, "r", encoding="utf-8", errors="replace") as f:
-        data = f.read()
 
-    stories = [s.strip() for s in data.split("<|endoftext|>") if s.strip()]
-    # Append end-of-text token back so the model learns to predict it
-    stories = [s + "<|endoftext|>" for s in stories]
+    if path.suffix.lower() == ".csv":
+        stories = []
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                text = row["text"].strip()
+                if text:
+                    stories.append(text + "<|endoftext|>")
+                if max_stories is not None and len(stories) >= max_stories:
+                    break
+    else:
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            data = f.read()
+        stories = [s.strip() for s in data.split("<|endoftext|>") if s.strip()]
+        stories = [s + "<|endoftext|>" for s in stories]
+        if max_stories is not None:
+            stories = stories[:max_stories]
 
-    if max_stories is not None:
-        stories = stories[:max_stories]
     print(f"Loaded {len(stories)} stories")
     return stories
 

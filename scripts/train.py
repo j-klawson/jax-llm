@@ -22,7 +22,9 @@ def main() -> None:
     args = parser.parse_args()
 
     # Set JAX backend before importing JAX
-    os.environ["JAX_PLATFORMS"] = args.device
+    # JAX uses "cuda" internally, but we expose "gpu" as a friendlier CLI option
+    platform = "cuda" if args.device == "gpu" else args.device
+    os.environ["JAX_PLATFORMS"] = platform
 
     from jax_llm.config import TrainConfig
     from jax_llm.train import train

@@ -11,6 +11,7 @@ def generate_text(
     max_new_tokens: int = 50,
     temperature: float = 0.8,
     seed: int = 0,
+    repetition_penalty: float = 1.2,
 ) -> list[int]:
     """Autoregressive token-by-token generation with temperature sampling."""
     tokens = list(prompt_tokens)
@@ -20,10 +21,25 @@ def generate_text(
     for _ in range(max_new_tokens):
         # Truncate to maxlen if needed
         input_tokens = tokens[-model.maxlen :]
-        input_array = jnp.array([input_tokens], dtype=jnp.int32)
+        seq_len = len(input_tokens)
+        # Pad to fixed maxlen so JAX compiles the model only once
+        padded = input_tokens + [0] * (model.maxlen - seq_len)
+        input_array = jnp.array([padded], dtype=jnp.int32)
         logits = model(input_array)
-        # Get logits for the last position
-        next_token_logits = logits[0, -1, :]
+        # Get logits for the actual last token position (not the padding)
+        next_token_logits = logits[0, seq_len - 1, :]
+
+        # Penalize tokens that have already appeared
+        if repetition_penalty != 1.0:
+            seen = jnp.array(list(set(tokens)), dtype=jnp.int32)
+            penalty = jnp.ones_like(next_token_logits)
+            penalty = penalty.at[seen].set(repetition_penalty)
+            # Divide positive logits, multiply negative logits (shrinks toward 0)
+            next_token_logits = jnp.where(
+                next_token_logits > 0,
+                next_token_logits / penalty,
+                next_token_logits * penalty,
+            )
 
         if temperature > 0:
             scaled_logits = next_token_logits / temperature
@@ -47,6 +63,7 @@ def generate_story(
     temperature: float = 0.8,
     max_new_tokens: int = 50,
     seed: int = 0,
+    repetition_penalty: float = 1.2,
 ) -> str:
     """Generate text from a string prompt, returning decoded text."""
     tokenizer = tiktoken.get_encoding("gpt2")
@@ -57,5 +74,6 @@ def generate_story(
         max_new_tokens=max_new_tokens,
         temperature=temperature,
         seed=seed,
+        repetition_penalty=repetition_penalty,
     )
     return tokenizer.decode(output_tokens)
